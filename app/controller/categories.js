@@ -4,7 +4,7 @@ class CategoryController extends Controller{
   async index(){
     const ctx = this.ctx;
     const query = { limit: ctx.helper.parseInt(ctx.query.limit), offset: ctx.helper.parseInt(ctx.query.offset) };
-    ctx.body = await ctx.model.Category.finAll(query)
+    ctx.body = await ctx.model.Category.findAll(query)
   }
   async show(){
     const ctx = this.ctx;
@@ -48,9 +48,24 @@ class CategoryController extends Controller{
       desc,
       thumb
     } = ctx.request.body;
+    await category.update({
+      sort,
+      title,
+      desc,
+      thumb
+    })
+    ctx.body = {category,msg:"123"};
   }
   async destroy(){
-
+    const ctx = this.ctx;
+    const id = ctx.helper.parseInt(ctx.params.id);
+    const category = await ctx.model.Category.findByPk(id);
+    if (!category) {
+      ctx.status = 404;
+      return;
+    }
+    await category.destroy();
+    ctx.status = 200;
   }
 }
 
